@@ -13,39 +13,39 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 /**
  * FormatUtil contains utility methods for formatting data e.g., phone numbers, 
  * money, etc.
  *
  * @package mindplex-commons-util
  * @author Abel Perez 
- */ 
-class FormatUtil 
+ */
+class FormatUtil
 {
-	/**
-	 * Formats the specified phone number into a human readable format (xxx)xxx-xxxx.
-	 *
-	 * @param $phone the phone number to format
-	 *
-	 * @return the specified phone formatted in human readable format.
-	 */
-	public static function formatPhone($phone = '') {
-	
-		$phone = preg_replace("/[^0-9]/", "", $phone);
-	
-		if (strlen($phone) == 7) {
-			return preg_replace("/([0-9]{3})([0-9]{4})/", 
-				"$1-$2", $phone);
-			
-		} elseif(strlen($phone) == 10) {
-			return preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", 
-				"($1) $2-$3", $phone);
-				
-		} else {
-			return $phone;
-		}
-	}
+    /**
+     * Formats the specified phone number into a human readable format (xxx)xxx-xxxx.
+     *
+     * @param $phone the phone number to format
+     *
+     * @return the specified phone formatted in human readable format.
+     */
+    public static function formatPhone($phone = '') {
+
+        $phone = preg_replace("/[^0-9]/", "", $phone);
+
+        if (strlen($phone) == 7) {
+            return preg_replace("/([0-9]{3})([0-9]{4})/",
+                    "$1-$2", $phone);
+
+        } elseif(strlen($phone) == 10) {
+            return preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/",
+                    "($1) $2-$3", $phone);
+
+        } else {
+            return $phone;
+        }
+    }
 }
 
 ?>

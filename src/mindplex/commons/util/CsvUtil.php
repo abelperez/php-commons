@@ -13,7 +13,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 /**
  * CsvUtil contains methods that are common and useful when working with CSV files.
  *
@@ -22,27 +22,27 @@
  */
 class CsvUtil
 {
-	/**
-	 * Creates a two dimensional array that contains the CSV data from the specified 
+    /**
+     * Creates a two dimensional array that contains the CSV data from the specified 
      * CSV file. 
-	 *
-	 * @param string $file the CSV file to open and convert into an array.
-	 * 
-	 * @returns two dimensional array that contains the CSV data from the specified 
+     *
+     * @param string $file the CSV file to open and convert into an array.
+     *
+     * @returns two dimensional array that contains the CSV data from the specified 
      * CSV file. 
-	 */
-	public static function toArray($file) {
-		
-		$data = array();
-		$handle = fopen($file, "r");
-		
-		while (($row = fgetcsv($handle, ",")) !== FALSE) {
-			$data[] = $row;
-		}
-		
-		fclose($handle);
-		return $data;
-	}
+     */
+    public static function toArray($file) {
+
+        $data = array();
+        $handle = fopen($file, "r");
+
+        while (($row = fgetcsv($handle, ",")) !== FALSE) {
+            $data[] = $row;
+        }
+
+        fclose($handle);
+        return $data;
+    }
 }
 
 ?>
