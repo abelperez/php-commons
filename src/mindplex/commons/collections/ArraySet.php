@@ -22,7 +22,7 @@
  * @package mindplex-commons-collections
  * @author Abel Perez 
  */
-class ArraySet
+class ArraySet implements Set
 {
     /** Elements in this set */
     private $elements;
