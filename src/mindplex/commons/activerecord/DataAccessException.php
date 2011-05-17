@@ -13,7 +13,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 /**
  * DataAccessException is a custom Exception that contains additonal information 
  * related to the result of an exception caused by accessing data from a data store.
@@ -38,34 +38,34 @@
  */
 class DataAccessException extends Exception
 {
-	/** inner exception */
-	private $innerException;
-	
-	/**
-	 * Constructs this exception and initializes it with the specified message, 
+    /** inner exception */
+    private $innerException;
+
+    /**
+     * Constructs this exception and initializes it with the specified message, 
      * error code and inner exception.
-	 */
-	public function __construct($message, $errorCode = 0, Exception $innerException = null) {
-		parent::__construct($message, $errorCode);
-		
-		if (! is_null($innerException)) {
-			$this->innerException = $innerException;
-		}
-	}
-	
-	/**
-	 * Get's the string representation of this exception.
-	 *
-	 * @returns the string representation of this exception.
-	 */
-	public function toString() {
-		$string = __CLASS__ . ': ['.$this->code.']: '.$this->message;
-		if (defined('__DEBUG__') && 
-			! is_null($this->innerException)) { 
-			$string .= ' -- inner exception: '.$this->innerException->getMessage();
-		}
-		return $string;
-	}
+     */
+    public function __construct($message, $errorCode = 0, Exception $innerException = null) {
+        parent::__construct($message, $errorCode);
+
+        if (! is_null($innerException)) {
+            $this->innerException = $innerException;
+        }
+    }
+
+    /**
+     * Get's the string representation of this exception.
+     *
+     * @returns the string representation of this exception.
+     */
+    public function toString() {
+        $string = __CLASS__ . ': ['.$this->code.']: '.$this->message;
+        if (defined('__DEBUG__') &&
+                ! is_null($this->innerException)) {
+            $string .= ' -- inner exception: '.$this->innerException->getMessage();
+        }
+        return $string;
+    }
 }
 
 ?>
