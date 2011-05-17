@@ -22,6 +22,41 @@
  */
 class CsvUtil
 {
+	/**
+	 * Converts implicit tab and new line characters into their literal equivalants.
+	 * For example \t and \n.
+	 *
+	 * @param $data the data to clean up.
+	 */
+	protected function clean(&$data) {
+		$data = preg_replace("/\t/", "\\t", $data);
+		$data = preg_replace("/\r?\n/", "\\n", $data);
+	}
+	
+	/**
+	 * Exports the specified collection to tab delimited data as an Excel file.
+	 *
+	 * @param $collection the collection to transform into a CSV and Excel 
+	 * compatible file.
+	 */
+	public function export($collection) {
+	
+		$output = '';
+		
+		$head = TRUE;
+		foreach ($collection as $row) {
+			if ($head) {
+				# first row is column names
+				$output .= implode("\t", array_keys($row))."\n";
+				$head = FALSE;
+			}
+			array_walk($row, array($this, 'clean'));
+			$output .= implode("\t", array_values($row))."\n";
+		}
+		
+		return $output;	
+	}
+
     /**
      * Creates a two dimensional array that contains the CSV data from the specified 
      * CSV file. 
