@@ -13,7 +13,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 /**
  * Simple countable that provides a count.
  *
@@ -22,22 +22,22 @@
  */
 class SimpleCountable implements Countable
 {
-	/** current count */
-	private $count = 0;
-	
-	/**
-	 * Constructs this countable with the specified count.
-	 */
-	public function SimpleCountable($count) {
-		$this->count = $count;
-	}
-	
-	/**
-	 * Get's the current count.
-	 */	
-	public function count() {
-		return $this->count;
-	}
+    /** current count */
+    private $count = 0;
+
+    /**
+     * Constructs this countable with the specified count.
+     */
+    public function SimpleCountable($count) {
+        $this->count = $count;
+    }
+
+    /**
+     * Get's the current count.
+     */
+    public function count() {
+        return $this->count;
+    }
 }
 
 ?>
