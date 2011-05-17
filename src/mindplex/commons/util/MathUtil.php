@@ -15,12 +15,12 @@
  */
 
 /**
- * Math contains statistical function for analyzing data.
+ * MathUtil contains statistical function for analyzing data.
  *
  * @package mindplex-commons-util
  * @author Abel Perez
  */
-class Math
+class MathUtil
 {
     /**
      * Calculates the mean of the specified elements.
