@@ -16,7 +16,7 @@
 
 /**
  * A weighted round robin array for efficient load balancing of elements
- * contained in this WeightedRoundRobinArray.
+ * contained in this WeightedRoundRobinList.
  *
  * @package mindplex-commons-collections
  * @author Abel Perez
@@ -28,10 +28,10 @@ class WeightedRoundRobinList implements Iterator, Countable
      */
     private $elements;
 
-	/**
-	 * The size of this list.
-	 */
-	private $size = 0;
+    /**
+     * The size of this list.
+     */
+    private $size = 0;
 
     /**
      * The position this list is currently in.  Each time this list is
@@ -51,68 +51,68 @@ class WeightedRoundRobinList implements Iterator, Countable
      */
     private $modCount = 0;
 
-	/**
-	 * Constructs an empty WeightedRoundRobinList.
-	 */
-	public function WeightedRoundRobinArray() {
-		$this->elements = array();
-	}
+    /**
+     * Constructs an empty WeightedRoundRobinList.
+     */
+    public function WeightedRoundRobinArray() {
+        $this->elements = array();
+    }
 
-	/**
-	 * Adds the specified value and it's corresponding weight to this list. 
-	 * A weight with a value equal to or less than zero will prevent the 
-	 * specified value from being added to this list.  Valid weight values 
-	 * must be greater than zero.
-	 *
-	 * If the specified value and weight combination exist in this list 
-	 * then only the weight for the given value is updated; otherwise the 
-	 * value weight combination is added to this list.
-	 *
-	 * @param $value mixed the value to add to this list.
-	 * @param $weight int the weight to apply to the specified value.
-	 *
-	 * @return LoadBalanceList this list.
-	 */
-	public function add($value, $weight) {
-	
-		// if the specified weight is less than zero
-		// there's no need to proceed.  Valid weight
-		// values must be greater than zero.
-		if ($weight < 0) return $this;
-	
-		// In order to verify if the specified value
-		// and weight combination already exist in this
-		// list, we create an element node that we can
-		// use to search this list.
-		$element = new Element($value, $weight);
-	
-		$index = $this->search($element);
-		
-		// if this list does not contain the given value
-		// weight combination we add it to this list;
-		// otherwise we update the existing weight of the
-		// specified value with the given weight.
-	
-		if ($index < 0) {
-			$this->elements[] = $element;
-	
-		} else {
-			$target = $this->elements[$index];
-			$target->setWeight($weight);
-	
-			// if the specified weight is smaller than the
-			// values distribution count, we reset the count.
-			// In other words this means that the value
-			// has been accessed more times than the new
-			// weight allows.
-			if ($target->getCount() > $target.getWeight()) {
-				$target->setCount(0);
-			}
-		}
-	
-		$this->modCount++;
-		return $this;
-	}
+    /**
+     * Adds the specified value and it's corresponding weight to this list. 
+     * A weight with a value equal to or less than zero will prevent the 
+     * specified value from being added to this list.  Valid weight values 
+     * must be greater than zero.
+     *
+     * If the specified value and weight combination exist in this list 
+     * then only the weight for the given value is updated; otherwise the 
+     * value weight combination is added to this list.
+     *
+     * @param $value mixed the value to add to this list.
+     * @param $weight int the weight to apply to the specified value.
+     *
+     * @return LoadBalanceList this list.
+     */
+    public function add($value, $weight) {
+
+        // if the specified weight is less than zero
+        // there's no need to proceed.  Valid weight
+        // values must be greater than zero.
+        if ($weight < 0) return $this;
+
+        // In order to verify if the specified value
+        // and weight combination already exist in this
+        // list, we create an element node that we can
+        // use to search this list.
+        $element = new Element($value, $weight);
+
+        $index = $this->search($element);
+
+        // if this list does not contain the given value
+        // weight combination we add it to this list;
+        // otherwise we update the existing weight of the
+        // specified value with the given weight.
+
+        if ($index < 0) {
+            $this->elements[] = $element;
+
+        } else {
+            $target = $this->elements[$index];
+            $target->setWeight($weight);
+
+            // if the specified weight is smaller than the
+            // values distribution count, we reset the count.
+            // In other words this means that the value
+            // has been accessed more times than the new
+            // weight allows.
+            if ($target->getCount() > $target.getWeight()) {
+                $target->setCount(0);
+            }
+        }
+
+        $this->modCount++;
+        return $this;
+    }
 
     /**
      * Sets the specified {@code value} and it's corresponding {@code weight}
@@ -129,9 +129,9 @@ class WeightedRoundRobinList implements Iterator, Countable
      *
      * @return LoadBalanceList this list.
      */
-	public function set($value, $weight) {
-		return $this->add($value, $weight);
-	}
+    public function set($value, $weight) {
+        return $this->add($value, $weight);
+    }
 
     /**
      * Removes the specified element from this list. If this list does
@@ -141,23 +141,23 @@ class WeightedRoundRobinList implements Iterator, Countable
      * @param $element Element the element to remove from this list.
      *
      * @return boolean true if this WeightedRoundRobinList is modified, 
-	 * false otherwise.
+     * false otherwise.
      */
-	public function remove($element) {
-		$target = new Element($element, 0);
-		
-		$changed = FALSE;
-		foreach ($this->elements as $k => $v) {
-			if ($element == $v->getValue()) {
-				unset($elements[$k]);
-				$changed = TRUE;
-				$this->size--;
-			}
-		}
-	
-		if ($changed) $this->modCount++;
-		return $changed;
-	}
+    public function remove($element) {
+        $target = new Element($element, 0);
+
+        $changed = FALSE;
+        foreach ($this->elements as $k => $v) {
+            if ($element == $v->getValue()) {
+                unset($elements[$k]);
+                $changed = TRUE;
+                $this->size--;
+            }
+        }
+
+        if ($changed) $this->modCount++;
+        return $changed;
+    }
 
     /**
      * Removes the specified collection of elements from this list. If this
@@ -169,43 +169,43 @@ class WeightedRoundRobinList implements Iterator, Countable
      * @return {@code true} if this WeightedRoundRobinList is modified;
      * otherwise false.
      */
-	public function removeAll($collection) {
-		foreach ($collection as $element) {
-			if (! $this->remove($element)) {
-				return FALSE;
-			}
-		}
-		return TRUE;
-	}
+    public function removeAll($collection) {
+        foreach ($collection as $element) {
+            if (! $this->remove($element)) {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
 
     /**
      * Removes all the elements in this list that are not contained in the
      * specified collection.  Once this method is complete, this list will 
-	 * only contain the elements found in the specified collection.
+     * only contain the elements found in the specified collection.
      *
      * @param $collection array the collection of elements to retain in this list.
      *
      * @return boolean true if this WeightedRoundRobinList is modified;
      * otherwise false.
      */
-	public function retainAll($collection) {
-	
-		$changed = FALSE;
-	
-		foreach ($elements as $element) {
-			
-			// if the current element is not contained in
-			// the specified collection, we remove it from
-			// this list; otherwise we retain it.
-			if (! in_array($element->getValue(),  $collection)) {
-				$this->remove($element->getValue());
-				$changed = TRUE;
-			}
-		}
-	
-		if ($changed) $this->modCount++;
-		return $changed;
-	}
+    public function retainAll($collection) {
+
+        $changed = FALSE;
+
+        foreach ($elements as $element) {
+
+            // if the current element is not contained in
+            // the specified collection, we remove it from
+            // this list; otherwise we retain it.
+            if (! in_array($element->getValue(),  $collection)) {
+                $this->remove($element->getValue());
+                $changed = TRUE;
+            }
+        }
+
+        if ($changed) $this->modCount++;
+        return $changed;
+    }
 
     /**
      * Gets the next available item in this list. The item provided is
@@ -242,54 +242,54 @@ class WeightedRoundRobinList implements Iterator, Countable
      * being called.
      *
      * @return mixed the next element in this list according to the weighted
-	 * round-robin policy.
+     * round-robin policy.
      */
-	public function get() {
-	
-		if (sizeof($this->elements) == 0) return NULL;
-	
-		if ($this->isDistributionComplete())  {
-			$this->resetDistributionCounts();
-			$this->position = 0;
-		}
-	
-		$found = FALSE;
-		while (! $found) {
-	
-			// if the current position exceeds the
-			// size of the elements, then we reset the current
-			// position to zero.  This effectively means that we
-			// have reached the end of the list, as a result of
-			// calling get.
-			if ($this->position >= sizeof($this->elements)) {
-				$this->position = 0;
-			}
-	
-			$node = $this->elements[$this->position];
-	
-			// if the distribution count of the current
-			// element is less than it's weight, then we
-			// know that this element can be accessed.
-			// We increment the elements distribution
-			// count and break out of the loop.
-	
-			if ($node->getCount() < $node->getWeight()) {
-				$node->incrementCount();
-				$found = TRUE;
-	
-			} else {
-				// this element is not the one we want
-				// so we move the position forward and
-				// continue through the loop.
-				$this->position++;
-			}
-		}
-	
-		// get the element at the current position and
-		// increment the modified count.
-		$result = $this->elements[$this->position++];
-		return $result->getValue();
-	}
+    public function get() {
+
+        if (sizeof($this->elements) == 0) return NULL;
+
+        if ($this->isDistributionComplete())  {
+            $this->resetDistributionCounts();
+            $this->position = 0;
+        }
+
+        $found = FALSE;
+        while (! $found) {
+
+            // if the current position exceeds the
+            // size of the elements, then we reset the current
+            // position to zero.  This effectively means that we
+            // have reached the end of the list, as a result of
+            // calling get.
+            if ($this->position >= sizeof($this->elements)) {
+                $this->position = 0;
+            }
+
+            $node = $this->elements[$this->position];
+
+            // if the distribution count of the current
+            // element is less than it's weight, then we
+            // know that this element can be accessed.
+            // We increment the elements distribution
+            // count and break out of the loop.
+
+            if ($node->getCount() < $node->getWeight()) {
+                $node->incrementCount();
+                $found = TRUE;
+
+            } else {
+                // this element is not the one we want
+                // so we move the position forward and
+                // continue through the loop.
+                $this->position++;
+            }
+        }
+
+        // get the element at the current position and
+        // increment the modified count.
+        $result = $this->elements[$this->position++];
+        return $result->getValue();
+    }
 
     /**
      * Returns true if the specified element is contained within this
@@ -300,10 +300,10 @@ class WeightedRoundRobinList implements Iterator, Countable
      * @return true if the specified element is contained within this
      * list; otherwise false.
      */
-	public function contains($element) {
-		$target = new Element($element, 0);
-		return in_array($target, $this->elements);
-	}
+    public function contains($element) {
+        $target = new Element($element, 0);
+        return in_array($target, $this->elements);
+    }
 
     /**
      * Returns true if the specified collection of element is contained
@@ -314,59 +314,59 @@ class WeightedRoundRobinList implements Iterator, Countable
      * @return true if the specified collection of elements is contained
      * within this list; otherwise false.
      */
-	public function containsAll($collection) {
-		foreach ($collection as $element) {
-	
-			// no need to continue if at least
-			// one element from the specified
-			// collection is not contained in
-			// this list.
-			if (! $this->contains($element)) {
-				return FALSE;
-			}
-		}
-		return TRUE;
-	}
+    public function containsAll($collection) {
+        foreach ($collection as $element) {
+
+            // no need to continue if at least
+            // one element from the specified
+            // collection is not contained in
+            // this list.
+            if (! $this->contains($element)) {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
 
     /**
      * Returns true if this WeightedRoundRobinList contains elements; 
-	 * otherwise false.
+     * otherwise false.
      *
      * @return boolean true if this WeightedRoundRobinList contains
      * elements; otherwise false.
      */
-	public function isEmpty() {
-		return empty($this->elements);
-	}
+    public function isEmpty() {
+        return empty($this->elements);
+    }
 
-	/**
-	 * Returns the count of elements contained in this list.
-	 *
-	 * @return the count of elements contained in this list.
-	 */
-	public function size() {
-		return $this->size;
-	}
+    /**
+     * Returns the count of elements contained in this list.
+     *
+     * @return the count of elements contained in this list.
+     */
+    public function size() {
+        return $this->size;
+    }
 
-	/**
-	 * Removes all the elements contained in this WeightedRoundRobinList.
-	 */
-	public function clear() {
-		unset($this->elements);
-		$this->elements = array();
-		$this->size = 0;
-		$this->position = 0;
-	}
+    /**
+     * Removes all the elements contained in this WeightedRoundRobinList.
+     */
+    public function clear() {
+        unset($this->elements);
+        $this->elements = array();
+        $this->size = 0;
+        $this->position = 0;
+    }
 
     /**
      * Gets the list of elements contained in this WeightedRoundRobinList.
      *
      * @return array the list of elements contained in this WeightedRoundRobinList.
      */
-	public function elements() {
-		$copy = $this->elements;
-		return $copy;
-	}
+    public function elements() {
+        $copy = $this->elements;
+        return $copy;
+    }
 
     /**
      * This WeightedRoundRobinList concludes equality with the given
@@ -376,7 +376,7 @@ class WeightedRoundRobinList implements Iterator, Countable
      * for both objects to be equal.
      *
      * @param $other WeightedRoundRobinList the other list to compare to this 
-	 * list for equality.
+     * list for equality.
      *
      * @return true if the specified object is equal to this list.
      */
@@ -424,21 +424,21 @@ class WeightedRoundRobinList implements Iterator, Countable
         $hash = 1;
 
         foreach ($elements as $element) {
-           $hash = (31 * hash) + ($element == NULL ? 0 : $element->hashCode());
+            $hash = (31 * hash) + ($element == NULL ? 0 : $element->hashCode());
         }
 
         return $hash;
     }
-	
+
     /**
      * Loads the specified list of elements into this WeightedRoundRobinList.  
-	 * Any existing elements in this list are removed before loading the 
-	 * specified list.  In other words this method re-initializes this list.
+     * Any existing elements in this list are removed before loading the 
+     * specified list.  In other words this method re-initializes this list.
      *
      * @param $elements array the list of elements to reinitialize this list with.
-	 * @param $weight int the default weight to set on the elements of the specified
-	 * list of elements.
-	 */
+     * @param $weight int the default weight to set on the elements of the specified
+     * list of elements.
+     */
     protected function initialize($elements, $weight = 1) {
 
         // this method is basically a way to
@@ -450,7 +450,7 @@ class WeightedRoundRobinList implements Iterator, Countable
             $this->add($element, $weight);
         }
     }
-	
+
     /**
      * Returns true if every element in this list has been
      * distributed according to its weight.  For example, this method
@@ -461,152 +461,152 @@ class WeightedRoundRobinList implements Iterator, Countable
      * @return true if every element in this list has been
      * distributed according to its weight.
      */
-	public function isDistributionComplete() {
-		$complete = TRUE;
-	
-		foreach ($this->elements as $element) {
-			if ($element->getCount() < $element->getWeight()) {
-				$complete = FALSE;
-			}
-		}
-		return $complete;
-	}
+    public function isDistributionComplete() {
+        $complete = TRUE;
+
+        foreach ($this->elements as $element) {
+            if ($element->getCount() < $element->getWeight()) {
+                $complete = FALSE;
+            }
+        }
+        return $complete;
+    }
 
     /**
      * Resets the distribution count for each element in this list to 0.
      */
-	public function resetDistributionCounts() {
-		foreach ($this->elements as $element) {
-			$element->setCount(0);
-		}
-	
-		// Since we are resetting the distribution count,
-		// we also reset the modification count.
-		$this->modCount = 0;
-	}
+    public function resetDistributionCounts() {
+        foreach ($this->elements as $element) {
+            $element->setCount(0);
+        }
 
-	/*
-	 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	  Iterable Operations
-	 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	 */
-	
-	/**
-	 * The element in this Iterators current position.
-	 */
-	private $current;
-	
-	/**
-	 * Flag that denotes if this Iterator is in a valid state.  In this
-	 * context, a valid state, referrs to this iterators ability to move 
-	 * forward.
-	 */
-	private $valid = TRUE;
-	
-	/**
-	 * Rewind the Iterator to the first element. Similar to the reset() 
-	 * function for arrays in PHP 
-	 *
-	 * @return void
-	 */
-	public function rewind() {
-		$this->resetDistributionCounts();
-		$this->current = $this->get();
-		$this->valid = TRUE;
-	}
+        // Since we are resetting the distribution count,
+        // we also reset the modification count.
+        $this->modCount = 0;
+    }
 
-	/**
-	 * Return the current element. Similar to the current() function for 
-	 * arrays in PHP.
-	 *
-	 * @return mixed current element from the collection 
-	 */
-	public function current() {
-		return $this->current;
-	}
+    /*
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       Iterable Operations
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      */
 
-	/**
-	 * Return the identifying key of the current element. Similar to the key() 
-	 * function for arrays in PHP.
-	 *
-	 * @return mixed either an integer or a string 
-	 */
-	public function key() {
-		return $this->position();
-	}
-	
-	/**
-	 *
-	 * @return
-	 */
-	public function next() {
-		
-		// blow up with a no such element exception
-		// because we have completely iterated over
-		// all the elements in the list this iterator
-		// represents.
-		if ($this->isDistributionComplete()) {
-			$this->valid = FALSE;
-			return;
-		}
+    /**
+     * The element in this Iterators current position.
+     */
+    private $current;
 
-		try {
-			$this->current = $this->get();
-			
-		} catch (Exception $exception) {
-			$this->valid = FALSE;
-		}
-	}
-	
-	/**
-	 *
-	 * @return
-	 */
-	public function valid() {
-		return $this->valid;
-	}
-	
-	/*
-	 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	  Countable Operations
-	 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	 */
-	 
-	/**
-	 * Get's the count of items in this iterator.
-	 */
-	public function count() {
-		return sizeof($this->elements);
-	}
+    /**
+     * Flag that denotes if this Iterator is in a valid state.  In this
+     * context, a valid state, referrs to this iterators ability to move 
+     * forward.
+     */
+    private $valid = TRUE;
 
-	protected function position() {
-		return $this->position;	
-	}	
-	
-	/**
-	 * Search this list for the specified element and return its index in
-	 * the internal array that backs this list.
-	 *
-	 * @param $element Element the element to search for.
-	 *
-	 * @return int the array index for the element found as a result of this
-	 * search.
-	 */
-	private function search($element) {
-		for ($i = 0; $i < sizeof($this->elements); $i++) {
-			$target = $this->elements[$i];
-			if ($element->getValue() == $target->getValue()) {
-				return $i;		
-			}
-		}
-		return -1;
-	}
+    /**
+     * Rewind the Iterator to the first element. Similar to the reset() 
+     * function for arrays in PHP 
+     *
+     * @return void
+     */
+    public function rewind() {
+        $this->resetDistributionCounts();
+        $this->current = $this->get();
+        $this->valid = TRUE;
+    }
+
+    /**
+     * Return the current element. Similar to the current() function for 
+     * arrays in PHP.
+     *
+     * @return mixed current element from the collection 
+     */
+    public function current() {
+        return $this->current;
+    }
+
+    /**
+     * Return the identifying key of the current element. Similar to the key() 
+     * function for arrays in PHP.
+     *
+     * @return mixed either an integer or a string 
+     */
+    public function key() {
+        return $this->position();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public function next() {
+
+        // blow up with a no such element exception
+        // because we have completely iterated over
+        // all the elements in the list this iterator
+        // represents.
+        if ($this->isDistributionComplete()) {
+            $this->valid = FALSE;
+            return;
+        }
+
+        try {
+            $this->current = $this->get();
+
+        } catch (Exception $exception) {
+            $this->valid = FALSE;
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public function valid() {
+        return $this->valid;
+    }
+
+    /*
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       Countable Operations
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      */
+
+    /**
+     * Get's the count of items in this iterator.
+     */
+    public function count() {
+        return sizeof($this->elements);
+    }
+
+    protected function position() {
+        return $this->position;
+    }
+
+    /**
+     * Search this list for the specified element and return its index in
+     * the internal array that backs this list.
+     *
+     * @param $element Element the element to search for.
+     *
+     * @return int the array index for the element found as a result of this
+     * search.
+     */
+    private function search($element) {
+        for ($i = 0; $i < sizeof($this->elements); $i++) {
+            $target = $this->elements[$i];
+            if ($element->getValue() == $target->getValue()) {
+                return $i;
+            }
+        }
+        return -1;
+    }
 }
 
 /**
  * A Element is a container object that contains a value with a weight 
  * and a counter.
- * 
+ *
  * @author Abel Perez
  */
 class Element
@@ -630,37 +630,37 @@ class Element
 
     /**
      * Constructs this element with the supplied value and weight.
-	 *
+     *
      * @param $value mixed the underlying value for this element.
      * @param $weight int the weight of the underlying value this element contains.
-     * 
+     *
      * @return Element an Element from the supplied value and weight.
      *
      * @throws Exception if the specified value is null.	 
-	 */
+     */
     public function Element($value, $weight) {
-		if ($value == NULL) throw new Exception('specified value is null.');
+        if ($value == NULL) throw new Exception('specified value is null.');
         $this->value = $value;
         $this->weight = $weight;
     }
 
     /**
      * Returns an Element from the supplied value and weight.
-     * 
+     *
      * @param $value mixed the underlying value for this element.
      * @param $weight int the weight of the underlying value this element contains.
-     * 
+     *
      * @return Element an Element from the supplied value and weight.
      *
      * @throws Exception if the specified value is null.
      */
     public static function of($value, $weight = 1) {
-		return new Element($value, $weight);
+        return new Element($value, $weight);
     }
 
     /**
      * Gets the value this element contains.
-     * 
+     *
      * @return mixed the value this element contains.
      */
     public function getValue() {
@@ -669,13 +669,13 @@ class Element
 
     /**
      * Sets the value this element contains.
-     * 
+     *
      * @param $value mixed the value this element contains.
      *
      * @throws Exception if the specified value is null.
      */
     public function setValue($value) {
-		if ($value == NULL) throw new Exception('specified value is null.');
+        if ($value == NULL) throw new Exception('specified value is null.');
         $this->value = $value;
     }
 
@@ -699,7 +699,7 @@ class Element
 
     /**
      * Gets this elements count.
-     * 
+     *
      * @return int this elements count.
      */
     public function getCount() {
@@ -717,12 +717,12 @@ class Element
 
     /**
      * Increments this elements counter by 1.
-     * 
+     *
      * @return int the new count.
      */
     public function incrementCount() {
         $this->count = $this->count + 1;
-		return $this->count;
+        return $this->count;
     }
 
     /**
@@ -732,7 +732,7 @@ class Element
      */
     public function decrementCount() {
         $this->count = $this->count - 1;
-		return $this->count;
+        return $this->count;
     }
 
     /**
@@ -744,24 +744,24 @@ class Element
      * @return true if the specified element is equal to this one;
      * otherwise false.
      */
-	public function equals($other) {
+    public function equals($other) {
         if (! ($other instanceof Element)) {
-        	return FALSE;
+            return FALSE;
         }
         return ($this->value == $other->value);
     }
-	
-	/**
-	 * Gets the hash code of this element.  The hashcode serves the purpose of 
-	 * a unique id for an instance of this object.
-	 *
-	 * @return int this objects hashcode.
-	 */
-	public function hashCode() {
-		$hash = 7;
+
+    /**
+     * Gets the hash code of this element.  The hashcode serves the purpose of 
+     * a unique id for an instance of this object.
+     *
+     * @return int this objects hashcode.
+     */
+    public function hashCode() {
+        $hash = 7;
         $hash = 97 * $hash + ($this->value != NULL ? spl_object_hash($this) : 0);
-        return $hash;	
-	}
+        return $hash;
+    }
 }
 
 ?>
