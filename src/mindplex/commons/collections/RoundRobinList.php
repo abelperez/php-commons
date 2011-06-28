@@ -13,7 +13,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
- 
+
 /**
  * A weighted round robin array for efficient load balancing of elements
  * contained in this WeightedRoundRobinArray.
@@ -23,27 +23,27 @@
  */
 class RoundRobinList extends WeightedRoundRobinList
 {
-	/**
-	 * Adds the specified $value to this list.
-	 *
-	 * @param $value mixed the value to add to this list.
-	 *
-	 * @return RoundRobinList this list.
-	 */	
-	public function add($value) {
-		return parent::add($value, 1);
-	}
-	
-	/**
-	 * Adds the specified $value to this list.
-	 *
-	 * @param $value mixed the value to add to this list.
-	 *
-	 * @return RoundRobinList this list.
-	 */	
-	public function set($value) {
-		return parent::set($value, 1);	
-	}
+    /**
+     * Adds the specified $value to this list.
+     *
+     * @param $value mixed the value to add to this list.
+     *
+     * @return RoundRobinList this list.
+     */
+    public function add($value) {
+        return parent::add($value, 1);
+    }
+
+    /**
+     * Adds the specified $value to this list.
+     *
+     * @param $value mixed the value to add to this list.
+     *
+     * @return RoundRobinList this list.
+     */
+    public function set($value) {
+        return parent::set($value, 1);
+    }
 }
 
 ?>
