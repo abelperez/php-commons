@@ -98,17 +98,17 @@ abstract class BaseGateway
         $curl = curl_init();
         $endpoint = $this->getEndpoint();
 
+		// HTTP GET
+        if ($method == 'GET') {
+            $endpoint .= '?' . $payload;
+        }
+		
         curl_setopt($curl, CURLOPT_URL, $endpoint);
 
         // HTTP AUTH
         if ($secure) {
             curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
             curl_setopt($curl, CURLOPT_USERPWD, $this->getCredentials());
-        }
-
-        // HTTP GET
-        if ($method == 'GET') {
-            $endpoint .= '?' . $payload;
         }
 
         // HTTP POST
@@ -141,6 +141,7 @@ abstract class BaseGateway
         }
 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
         // curl_setopt($curl, CURLOPT_HTTPHEADER, array('Expect:'));
 
         $data = curl_exec($curl);
