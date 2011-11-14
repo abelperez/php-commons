@@ -18,10 +18,6 @@
  * GenericActiveRecord in abstract class that contains methods that support the 
  * ActiveRecord data access pattern.
  *
- * TODO: optimize performance by defining a new abstract method getClass() that 
- * returns the current class name from a var that gets set once and only once, 
- * instead of always calling the reflective method get_class.
- *
  * @package mindplex-commons-activerecord
  * @author Abel Perez
  */
@@ -38,6 +34,9 @@ abstract class GenericActiveRecord
 
     /** default sort key that maps to an attribute of this object */
     private $sortKey = 'id';
+	
+	/** the name of this active record. */
+	private $class;
 
     /*
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,6 +50,7 @@ abstract class GenericActiveRecord
     public function initialize($attributes) {
         if (! is_array($attributes)) return;
         $this->fields = $attributes;
+		$this->class = get_class($this);
     }
 
     /**
@@ -407,6 +407,105 @@ abstract class GenericActiveRecord
         } catch (Exception $exception) {
             $message = sprintf('Failed to reload: %s by id: %d.', 'Patient', $this->id);
             throw new DataAccessException($message, 106, $exception);
+        }
+    }
+
+    /**
+     * Asigns the specified column/value to a fragment of a SQL UPDATE 
+     * statement. 
+     *
+     * @param string $column the name of the column to update.
+     * @param string|integer $value the value of the column to update.
+     *
+     * @return string 
+     */
+    private function assignUpdateSemantics($column, $value) {
+        return is_string($value) ? $column.'="'.$value.'",' : $column.'='.$value.',';	
+    }
+
+    /**
+     * Asigns the specified value to a fragment of a SQL INSERT statement. 
+     *
+     * @param string|integer $value the value of the column to update.
+     *
+     * @return string 
+     */
+    private function assignInsertSemantics($value) {
+        return is_string($value) ? '"'.$value.'",' : $value.',';
+    }
+
+    /**
+     * Saves this entity if its a brand new instance that does not exist 
+     * in the database; otherwise updates this entity in the database by 
+     * flushing all its attributes directly to the database.
+     */
+    public function saveOrUpdate() {
+        try {
+
+            // if this entity has been destroyed then we cannot 
+            // assert the validaty of this instance identity
+            // so we simply ignore any persistence operations.
+
+            if ($this->isDestroyed() == true) return;
+
+            // avoid getting fields array directly, in case a 
+            // sub-class of this object overrides the default
+            // behavior for listing this objects fields.
+
+            $fields = $this->getAttributes();
+
+            if ($this->id) {
+
+                // since this is an update operation we
+                // update the modification timestamps.
+
+                if (array_key_exists('modified', $fields)) {
+                    $this->modified = $this->getDate();
+                }
+                if (array_key_exists('modifiedid', $fields)) {
+                    $this->modifiedid = time();	
+                }
+
+                $sql = 'UPDATE '.$this->class.' SET ';
+
+                // attributes to update
+                foreach ($this->fields as $k => $v) {
+                    $sql .= $this->assignUpdateSemantics($k, $v);
+                }
+
+                // constraint update to this instance identity.
+                $sql = rtrim($sql, ',').' WHERE id = '.$this->id;
+                DataAccess::getInstance()->query($sql);
+
+            } else {
+
+                // since this is an update operation we
+                // update the modification timestamps.
+				
+                if (array_key_exists('created', $fields) && ($fields['created'] == '')) {
+                    $this->created = $this->getDate();	
+                }
+                if (array_key_exists('createdid', $fields) && ($fields['createdid'] == '')) {
+                    $this->createdid = time();	
+                }
+
+                $sql = 'INSERT INTO '.$this->class.' (';
+                $values = '';
+
+                // values to insert
+                foreach ($this->fields as $k => $v) {
+                    $sql .= $k.',';	
+                    $values .= $this->assignInsertSemantics($v);	
+                }
+
+                $sql = rtrim($sql, ',').') VALUES ('.rtrim($values, ',').')';
+
+                DataAccess::getInstance()->query($sql);
+                $this->id = DataAccess::getInstance()->lastInsertId();
+            }
+
+        } catch (Exception $exception) {
+            throw new Exception('Failed to complete save or update.');
         }
     }
 
