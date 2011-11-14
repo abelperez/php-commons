@@ -750,18 +750,18 @@ abstract class GenericActiveRecord
      * @return a sql select * expression based on this entity.
      */
     public function selectAllExpression($filter = array()) {
-    if (empty($filter)) {
-        $filter = $this->getAttributeNames();
+        if (empty($filter)) {
+            $filter = $this->getAttributeNames();
+        }
+        $class = get_class($this);
+        $select = 'SELECT SQL_CALC_FOUND_ROWS ';
+        foreach ($filter as $attribute) {
+            $select .= $attribute.', ';
+        }
+        $select = substr_replace($select, "", -2);
+        $select .= ' FROM %s ';
+        return sprintf($select, $class);
     }
-    $class = get_class($this);
-    $select = 'SELECT SQL_CALC_FOUND_ROWS ';
-    foreach ($filter as $attribute) {
-        $select .= $attribute.', ';
-    }
-    $select = substr_replace($select, "", -2);
-    $select .= ' FROM %s ';
-    return sprintf($select, $class);
-}
 
     /**
      * Searches for the specified keyword in the given attributes of this 
@@ -774,25 +774,24 @@ abstract class GenericActiveRecord
      * @return the search results of the given keyword and attributes.
      */
     public function like($keyword, $attributes = array(), $gate = 'AND') {
+        try {
+            $like = ' WHERE '.$this->likeExpression($keyword, $attributes, $gate);
 
-    try {
-        $like = ' WHERE '.$this->likeExpression($keyword, $attributes, $gate);
+            $entities = array();
+            $class = get_class($this);
+            $query = sprintf('select * from %s', $class).$like;
+            $result = $this->connection()->query($query);
 
-        $entities = array();
-        $class = get_class($this);
-        $query = sprintf('select * from %s', $class).$like;
-        $result = $this->connection()->query($query);
+            foreach ($result as $row) {
+                $entity = $this->mapper($row);
+                $entities[] = $entity;
+            }
+            return $entities;
 
-        foreach ($result as $row) {
-            $entity = $this->mapper($row);
-            $entities[] = $entity;
+        } catch (Exception $exception) {
+            throw new DataAccessException('Failed to search this entity.', 101, $exception);
         }
-        return $entities;
-
-    } catch (Exception $exception) {
-        throw new DataAccessException('Failed to search this entity.', 101, $exception);
     }
-}
 
     /**
      * Builds a sql LIKE statement based on the specified keyword as the search 
@@ -810,21 +809,21 @@ abstract class GenericActiveRecord
      * @return sql LIKE statement based on the given keyword, attributes, and gate.
      */
     public function likeExpression($keyword, $attributes = array(), $gate = 'AND') {
-    try {
-        $like = " ";
+        try {
+            $like = " ";
 
-        if (! empty($attributes)) {
-            foreach ($attributes as $attribute) {
-                $like .= $attribute." LIKE '%".$keyword."%' ".$gate." ";
+            if (! empty($attributes)) {
+                foreach ($attributes as $attribute) {
+                    $like .= $attribute." LIKE '%".$keyword."%' ".$gate." ";
+                }
+                $like = substr_replace($like, "", -4);
             }
-            $like = substr_replace($like, "", -4);
-        }
-        return $like." ";
+            return $like." ";
 
-    } catch (Exception $exception) {
-        throw new DataAccessException('Failed to build sql lIKE clause.', 101, $exception);
+        } catch (Exception $exception) {
+            throw new DataAccessException('Failed to build sql lIKE clause.', 101, $exception);
+        }
     }
-}
 
     /**
      * Builds a sql "Order By" expression based on the specified attributes and 
@@ -844,34 +843,33 @@ abstract class GenericActiveRecord
      * @return sql Order By statement.
      */
     public function orderByExpression($attributes = array(), $direction = 'ASC', $compound = FALSE) {
-    try {
+        try {
+            if (empty($attributes)) return '';
 
-        if (empty($attributes)) return '';
+            $order = ' ORDER BY ';
 
-        $order = ' ORDER BY ';
+            if (! $compound) {
+                foreach ($attributes as $attribute) {
+                    $order .= $attribute.', ';
+                }
 
-        if (! $compound) {
-            foreach ($attributes as $attribute) {
-                $order .= $attribute.', ';
+                $order = substr_replace($order, '', -2);
+                $order .= ' DESC';
+
+            } else {
+                foreach ($attributes as $key => $value) {
+                    $order .= $key.' '.$value.', ';
+                }
+
+                $order = substr_replace($order, '', -2);
             }
 
-            $order = substr_replace($order, '', -2);
-            $order .= ' DESC';
+            return $order;
 
-        } else {
-            foreach ($attributes as $key => $value) {
-                $order .= $key.' '.$value.', ';
-            }
-
-            $order = substr_replace($order, '', -2);
+        } catch (Exception $exception) {
+            throw new DataAccessException('Failed to build "order by" statement.', 101, $exception);
         }
-
-        return $order;
-
-    } catch (Exception $exception) {
-        throw new DataAccessException('Failed to build "order by" statement.', 101, $exception);
     }
-}
 
     /**
      * Builds a sql limit clause based on the specified start and limit values.
@@ -897,9 +895,9 @@ abstract class GenericActiveRecord
      * specified attributes to exclude.
      */
     public function filterAttributes($filter = array()) {
-    $attributes = $this->getAttributeNames();
-    return array_values(array_diff($attributes, $filter));
-}
+        $attributes = $this->getAttributeNames();
+        return array_values(array_diff($attributes, $filter));
+    }
 
     /*
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
