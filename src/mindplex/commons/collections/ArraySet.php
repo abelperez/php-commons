@@ -27,9 +27,6 @@ class ArraySet implements Set
     /** Elements in this set */
     private $elements;
 
-    /** the number of elements in this set */
-    private $size = 0;
-
     /**
      * Constructs this set.
      */
@@ -45,12 +42,9 @@ class ArraySet implements Set
      * @returns true if the specified element was added to this set.
      */
     public function add($element) {
-        if (! in_array($element, $this->elements)) {
-            $this->elements[] = $element;
-            $this->size++;
-            return true;
-        }
-        return false;
+        $result = !$this->contains($element);
+        $this->elements[$element] = true;
+        return $result;
     }
 
     /**
@@ -63,13 +57,10 @@ class ArraySet implements Set
      * where added to this set. 
      */
     public function addAll($collection) {
-        $changed = false;
-        foreach ($collection as $element) {
-            if ($this->add($element)) {
-                $changed = true;
-            }
-        }
-        return $changed;
+        $newcollection = array_fill_keys($collection, true);
+        $origlength = $this->size();
+        $this->elements = $this->elements + $newcollection;
+        return !($origlength == $this->size());
     }
 
     /**
@@ -77,7 +68,6 @@ class ArraySet implements Set
      */
     public function clear() {
         $this->elements = array();
-        $this->size = 0;
     }
 
     /**
@@ -88,7 +78,7 @@ class ArraySet implements Set
      * @returns true if this set contains the specified element.
      */
     public function contains($element) {
-        return in_array($element, $this->elements);
+        return array_key_exists($element, $this->elements);
     }
 
     /**
@@ -100,7 +90,7 @@ class ArraySet implements Set
      */
     public function containsAll($collection) {
         foreach ($collection as $element) {
-            if (! in_array($element, $this->elements)) {
+            if (! $this->contains($element)) {
                 return false;
             }
         }
@@ -113,7 +103,7 @@ class ArraySet implements Set
      * @returns true if this set contains no elements. 
      */
     public function isEmpty() {
-        return count($this->elements) <= 0;
+        return $this->size() == 0;
     }
 
     /**
@@ -122,7 +112,7 @@ class ArraySet implements Set
      * @returns an iterator over the elements in this set.
      */
     public function iterator() {
-        return new SimpleIterator($this->elements);
+        return new SimpleIterator(array_keys($this->elements));
     }
 
     /**
@@ -133,15 +123,12 @@ class ArraySet implements Set
      * @returns true if the specified element is removed.
      */
     public function remove($element) {
-        if (! in_array($element, $this->elements)) return false;
-
-        foreach ($this->elements as $k => $v) {
-            if ($element == $v) {
-                unset($this->elements[$k]);
-                $this->size--;
-                return true;
-            }
+        if (!$this->contains($element, $this->elements)) {
+            return false;
         }
+
+        unset($this->elements[$element]);
+        return true;
     }
 
     /**
@@ -152,13 +139,9 @@ class ArraySet implements Set
      * @returns true if all the specified elemensts are removed from this set. 
      */
     public function removeAll($collection) {
-        $changed = false;
-        foreach ($collection as $element) {
-            if ($this->remove($element)) {
-                $changed = true;
-            }
-        }
-        return $changed;
+        $origlength = $this->size();
+        $this->elements = array_diff_key($this->elements, array_fill_keys($collection, true));
+        return !($origlength == $this->size());
     }
 
     /**
@@ -172,15 +155,10 @@ class ArraySet implements Set
      * @returns true if this set changed as a result of the specified collection.
      */
     public function retainAll($collection) {
-        $changed = false;
-        foreach ($this->elements as $k => $v) {
-            if (! in_array($v, $collection)) {
-                unset($this->elements[$k]);
-                $this->size--;
-                $changed = true;
-            }
-        }
-        return $changed;
+        $newcollection = array_fill_keys($collection, true);
+        $origlength = $this->size(); 
+        $this->elements = array_intersect_key($this->elements, $newcollection);
+        return !($origlength == $this->size());
     }
 
     /**
@@ -189,7 +167,7 @@ class ArraySet implements Set
      * @returns the number of elements in this set.
      */
     public function size() {
-        return $this->size;
+        return count($this->elements);
     }
 
     /**
@@ -198,8 +176,7 @@ class ArraySet implements Set
      * @returns an array that contains all the elements in this set.
      */
     public function toArray() {
-        $elements = $this->elements;
-        return $elements;
+        return array_keys($this->elements);
     }
 }
 
